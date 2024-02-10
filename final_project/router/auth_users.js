@@ -43,9 +43,12 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   const username = req.session.authorization['username'];
 
   const selectedBook = books[isbn];
-  selectedBook.reviews[username] = bookReview;
-
-  return res.status(200).json({message: `The review for the book with ISB ${isbn} has been added/updated`, updatedBooks: books });
+  if(selectedBook) {
+    selectedBook.reviews[username] = bookReview;
+    return res.status(200).json({message: `The review for the book with ISB ${isbn} has been added/updated`, updatedBooks: books });
+  } else {
+    return res.status(404).json({message: `ISBN ${isbn} not found`});
+  }
 });
 
 // Delete a movie review
@@ -54,9 +57,12 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
   const username = req.session.authorization['username'];
 
   const selectedBook = books[isbn];
-  delete selectedBook.reviews[username];
-
-  return res.status(200).json({message: `The review for the book with ISB ${isbn} has been deleted for user ${username}`, updatedBooks: books });
+  if(selectedBook) {
+    delete selectedBook.reviews[username];
+    return res.status(200).json({message: `The review for the book with ISB ${isbn} has been deleted for user ${username}`, updatedBooks: books });
+  } else {
+    return res.status(404).json({message: `ISBN ${isbn} not found`});
+  }
 });
 
 module.exports.authenticated = regd_users;
